@@ -38,7 +38,7 @@ app.get("/api/products", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch products" });
   }
-});
+}); 
 
 app.post("/api/addprod", async (req, res) => {
   try {
