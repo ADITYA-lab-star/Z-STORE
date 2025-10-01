@@ -4,7 +4,7 @@ const Checkout = ({ total }) => {
   const shipping = total > 0 ? 10 : 0;
   const grandTotal = total + shipping;
   return (
-    <div className="checkout-container w-full bg-white rounded-xl shadow-lg p-8 mt-8 border-2 border-red-500 flex flex-row items-start justify-between gap-8">
+    <div className="checkout-container w-full bg-white rounded-xl shadow-lg p-4 sm:p-8 mt-8 border-2 border-red-500 flex flex-col md:flex-row items-start justify-between gap-8">
       {/* Left: Form */}
       <div className="flex-1">
         <h2 className="text-3xl font-extrabold text-red-600 mb-6">Checkout</h2>
@@ -72,7 +72,7 @@ const Checkout = ({ total }) => {
         </form>
       </div>
       {/* Right: Order Summary */}
-      <div className="order-summary w-96 bg-gray-50 border-l-2 border-yellow-500 rounded-xl p-6 flex flex-col items-center">
+      <div className="order-summary w-full md:w-96 bg-gray-50 border-t-2 md:border-t-0 md:border-l-2 border-yellow-500 rounded-xl p-4 sm:p-6 flex flex-col items-center mt-6 md:mt-0">
         <h3 className="text-2xl font-bold text-red-600 mb-4">Order Summary</h3>
         <div className="w-full flex flex-col gap-2 mb-6">
           <div className="flex justify-between text-lg">

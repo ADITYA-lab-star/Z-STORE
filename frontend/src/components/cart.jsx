@@ -27,10 +27,14 @@ const Cart = () => {
   );
 
   return (
-    <div className="cart flex flex-col items-center justify-center gap-4 pb-6">
-      <h2 className="text-4xl font-extrabold text-red-500 mt-4">Your Cart</h2>
+    <div className="cart flex flex-col items-center justify-center gap-4 pb-6 w-full px-2">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-red-500 mt-4 text-center">
+        Your Cart
+      </h2>
       {cartItems.length === 0 ? (
-        <p className="text-lg text-gray-700">Your cart is currently empty.</p>
+        <p className="text-lg text-gray-700 text-center">
+          Your cart is currently empty.
+        </p>
       ) : (
         cartItems.map((product, idx) => (
           <Cpcard

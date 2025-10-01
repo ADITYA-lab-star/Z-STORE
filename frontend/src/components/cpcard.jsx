@@ -6,16 +6,16 @@ const Cpcard = ({ product, onRemove }) => {
   };
 
   return (
-    <div className="cpcard flex items-center justify-between bg-white border-2 border-red-500 rounded-xl shadow-md p-6 my-4 w-full max-w-3xl mx-auto">
+    <div className="cpcard flex flex-col sm:flex-row items-center justify-between bg-white border-2 border-red-500 rounded-xl shadow-md p-4 sm:p-6 my-4 w-full max-w-3xl mx-auto">
       {/* Product Image */}
       <img
         src={product?.image || "imac.png"}
         alt={product?.name || "Product"}
-        className="w-36 h-36 object-contain rounded-lg border border-yellow-500 bg-gray-50"
+        className="w-32 h-32 sm:w-36 sm:h-36 object-contain rounded-lg border border-yellow-500 bg-gray-50 mb-2 sm:mb-0"
       />
 
       {/* Product Details */}
-      <div className="ml-8 flex-1">
+      <div className="sm:ml-8 flex-1 w-full">
         <h2 className="text-2xl font-extrabold text-red-600 hover:text-yellow-500 cursor-pointer mb-1">
           {product?.name || "Product Name"}
         </h2>

@@ -7,31 +7,34 @@ const Home = () => {
 
   useEffect(() => {
     fetch("http://localhost:5000/api/products") // backend endpoint
-      .then(res => res.json())
-      .then(json => setproducts(json))
-      .catch(err => console.error("Error fetching products:", err));
+      .then((res) => res.json())
+      .then((json) => setproducts(json))
+      .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
   return (
     <>
-      <div className="home flex flex-col items-center justify-center gap-4 pb-6">
-        <div className="poster">
-          <img src="./macpos.png" alt="" />
+      <div className="home flex flex-col items-center justify-center gap-4 pb-6 w-full">
+        <div className="poster w-full flex justify-center">
+          <img
+            src="./macpos.png"
+            alt=""
+            className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl h-auto object-contain rounded-lg"
+          />
         </div>
 
         <h2
           id="featured-products"
-          className="text-4xl font-extrabold text-red-500"
+          className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-red-500 text-center mt-4"
         >
           Featured Products
         </h2>
 
-        <div className="productCards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="productCards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full px-2">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-
       </div>
       <footer className="footer bg-gray-100 py-8 mt-8 w-full flex flex-col items-center">
         <div id="contacts" className="contacts-section mb-4 text-center">
