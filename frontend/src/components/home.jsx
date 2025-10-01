@@ -19,7 +19,7 @@ const Home = () => {
           <img
             src="./macpos.png"
             alt=""
-            className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl h-auto object-contain rounded-lg"
+            className="w-full h-auto object-contain rounded-lg"
           />
         </div>
 

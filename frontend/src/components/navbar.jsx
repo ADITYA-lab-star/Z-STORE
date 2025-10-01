@@ -48,7 +48,7 @@ const Navbar = () => {
         <div className="absolute top-full left-0 w-full bg-red-700 flex flex-col items-center py-2 z-50 md:hidden">
           <Link
             to="/"
-            className="py-2 w-full text-center"
+            className="py-2 w-full text-center text-white"
             onClick={() => setMenuOpen(false)}
           >
             Home
@@ -79,7 +79,7 @@ const Navbar = () => {
           </button>
           <Link
             to="/cart"
-            className="py-2 w-full text-center"
+            className="py-2 w-full text-center text-white"
             onClick={() => setMenuOpen(false)}
           >
             Cart
