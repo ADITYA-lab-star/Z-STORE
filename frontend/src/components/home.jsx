@@ -6,7 +6,7 @@ const Home = () => {
   const [products, setproducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products") // backend endpoint
+    fetch("https://z-store.onrender.com/api/products") // backend endpoint
       .then((res) => res.json())
       .then((json) => setproducts(json))
       .catch((err) => console.error("Error fetching products:", err));
