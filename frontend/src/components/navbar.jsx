@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, Menu, X, Hexagon, User, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
 const navLinks = [
   { type: "link", label: "Home", to: "/" },
+  { type: "scroll", label: "Categories", target: "categories" },
+  { type: "scroll", label: "AI Picks", target: "ai-picks" },
+  { type: "scroll", label: "Trending", target: "trending" },
   { type: "scroll", label: "Featured", target: "featured-products" },
   { type: "scroll", label: "Contact", target: "contacts" },
-  { type: "link", label: "Cart", to: "/cart" },
 ];
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -29,50 +38,57 @@ const Navbar = () => {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Successfully logged out");
+      navigate("/");
+    } catch (error) {
+      toast.error("Failed to log out");
+    }
+  };
+
   return (
     <>
-      {/* Spacer so floating nav doesn't overlap content */}
       <div className="h-24" aria-hidden="true" />
-
-      <header className="fixed top-3 sm:top-5 inset-x-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none">
-        <nav
-          className={`pointer-events-auto w-full max-w-6xl flex items-center justify-between gap-4 rounded-2xl border border-white/15 px-4 sm:px-6 py-2.5 sm:py-3 transition-all duration-500 ease-out
+      <header className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 sm:px-6 pointer-events-none">
+        <motion.nav
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className={`pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 rounded-full border px-4 sm:px-6 py-3 transition-all duration-500 ease-out
             ${scrolled
-              ? "bg-black/55 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
-              : "bg-black/30 shadow-[0_4px_24px_rgba(0,0,0,0.2)]"}
-            backdrop-blur-xl backdrop-saturate-150`}
-          style={{
-            WebkitBackdropFilter: "saturate(150%) blur(20px)",
-          }}
+              ? "bg-brand-900/60 border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+              : "bg-transparent border-transparent"}`}
         >
           {/* Brand */}
           <Link
             to="/"
-            className="group flex items-center gap-2 text-white font-semibold tracking-tight text-lg sm:text-xl"
+            className="group flex items-center gap-2 text-brand-light font-bold tracking-tight text-xl transition-transform hover:scale-105"
           >
-            <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-white/90 to-white/60 text-black font-black shadow-inner">
-              Z
-            </span>
-            <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-              Z-Store
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 shadow-lg">
+              <Hexagon className="h-5 w-5 text-white fill-white/20" />
+            </div>
+            <span className="hidden sm:block bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+              Z-STORE
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <ul className="hidden md:flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-1.5 py-1">
+          {/* Desktop Nav */}
+          <ul className="hidden md:flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-2 py-1.5 backdrop-blur-md">
             {navLinks.map((item) => (
               <li key={item.label}>
                 {item.type === "link" ? (
                   <Link
                     to={item.to}
-                    className="relative inline-flex items-center px-4 py-1.5 text-sm font-medium text-white/80 hover:text-white rounded-full transition-all duration-300 hover:bg-white/10"
+                    className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white rounded-full transition-all duration-300 hover:bg-white/10"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <button
                     onClick={() => scrollTo(item.target)}
-                    className="relative inline-flex items-center px-4 py-1.5 text-sm font-medium text-white/80 hover:text-white rounded-full transition-all duration-300 hover:bg-white/10"
+                    className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white rounded-full transition-all duration-300 hover:bg-white/10"
                   >
                     {item.label}
                   </button>
@@ -81,83 +97,120 @@ const Navbar = () => {
             ))}
           </ul>
 
-          {/* Desktop CTA */}
-          <Link
-            to="/cart"
-            className="hidden md:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-black bg-white rounded-full hover:bg-white/90 hover:scale-[1.03] active:scale-95 transition-all duration-300 shadow-[0_4px_20px_rgba(255,255,255,0.25)]"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-              <path d="M3 6h18"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            Shop
-          </Link>
+          {/* Desktop CTA & Icons */}
+          <div className="flex items-center gap-3">
+            {currentUser ? (
+              <div className="relative" onMouseLeave={() => setDropdownOpen(false)}>
+                <button
+                  onMouseEnter={() => setDropdownOpen(true)}
+                  className="hidden md:flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"
+                >
+                  {currentUser.photoURL ? (
+                    <img src={currentUser.photoURL} alt="Avatar" className="h-full w-full rounded-full object-cover" />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                </button>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-            className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/10 border border-white/15 text-white hover:bg-white/20 transition-all duration-300"
-          >
-            <div className="relative w-5 h-4">
-              <span
-                className={`absolute left-0 top-0 h-0.5 w-5 bg-white rounded transition-all duration-300 ${menuOpen ? "translate-y-[7px] rotate-45" : ""}`}
-              />
-              <span
-                className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-5 bg-white rounded transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"}`}
-              />
-              <span
-                className={`absolute left-0 bottom-0 h-0.5 w-5 bg-white rounded transition-all duration-300 ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
-              />
-            </div>
-          </button>
-        </nav>
+                <AnimatePresence>
+                  {dropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-48 rounded-2xl border border-white/10 bg-brand-900/90 backdrop-blur-xl shadow-2xl overflow-hidden py-2"
+                    >
+                      <div className="px-4 py-2 border-b border-white/10 mb-1">
+                        <p className="text-sm font-bold text-white truncate">{currentUser.displayName || "User"}</p>
+                        <p className="text-xs text-white/50 truncate">{currentUser.email}</p>
+                      </div>
+                      <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                        <User className="h-4 w-4" /> Profile
+                      </Link>
+                      <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
+                        <LogOut className="h-4 w-4" /> Log out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="hidden md:flex h-10 px-5 items-center justify-center rounded-full bg-white text-brand-900 text-sm font-bold hover:bg-brand-light transition-all duration-300 hover:scale-105"
+              >
+                Sign In
+              </Link>
+            )}
+            
+            <Link
+              to="/cart"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-brand-900">
+                2
+              </span>
+            </Link>
+
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"
+            >
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </motion.nav>
       </header>
 
-      {/* Mobile menu panel */}
-      <div
-        className={`fixed inset-x-3 z-40 md:hidden transition-all duration-300 ease-out ${
-          menuOpen
-            ? "top-[88px] opacity-100 translate-y-0 pointer-events-auto"
-            : "top-[80px] opacity-0 -translate-y-2 pointer-events-none"
-        }`}
-      >
-        <div className="rounded-2xl border border-white/15 bg-black/70 backdrop-blur-xl backdrop-saturate-150 shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-3">
-          <ul className="flex flex-col gap-1">
-            {navLinks.map((item, i) => (
-              <li
-                key={item.label}
-                style={{ transitionDelay: menuOpen ? `${i * 40}ms` : "0ms" }}
-                className={`transition-all duration-300 ${menuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`}
-              >
-                {item.type === "link" ? (
-                  <Link
-                    to={item.to}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-base font-medium"
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed inset-x-4 top-[88px] z-40 md:hidden pointer-events-auto"
+          >
+            <div className="rounded-3xl border border-white/10 bg-brand-900/90 backdrop-blur-2xl shadow-2xl p-4 overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-cyan-500/10" />
+              <ul className="relative z-10 flex flex-col gap-2">
+                {navLinks.map((item, i) => (
+                  <motion.li
+                    key={item.label}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
                   >
-                    {item.label}
-                    <span className="text-white/40">→</span>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => {
-                      scrollTo(item.target);
-                      setMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-base font-medium"
-                  >
-                    {item.label}
-                    <span className="text-white/40">→</span>
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+                    {item.type === "link" ? (
+                      <Link
+                        to={item.to}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 rounded-2xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-lg font-medium"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          scrollTo(item.target);
+                          setMenuOpen(false);
+                        }}
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-lg font-medium text-left"
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

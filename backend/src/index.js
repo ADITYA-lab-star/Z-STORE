@@ -8,6 +8,9 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
+
 // Product Schema & Model
 const productSchema = new mongoose.Schema({
   name: String,

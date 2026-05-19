@@ -1,57 +1,75 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./pcard.jsx";
 import Hero from "./Hero.jsx";
+import Trending from "./trending.jsx";
+import Categories from "./categories.jsx";
+import AiRecommendations from "./ai-recommendations.jsx";
+import Statistics from "./statistics.jsx";
+import Marquee from "./marquee.jsx";
+import Footer from "./footer.jsx";
 
 const Home = () => {
-  const [products, setproducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://z-store.onrender.com/api/products") // backend endpoint
+    fetch("https://z-store.onrender.com/api/products")
       .then((res) => res.json())
-      .then((json) => setproducts(json))
-      .catch((err) => console.error("Error fetching products:", err));
+      .then((json) => {
+        setProducts(json);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+        setLoading(false);
+      });
   }, []);
 
   return (
     <>
       <Hero />
-      <div className="home bg-[#05060a] flex flex-col items-center justify-center gap-4 pb-16 w-full">
-        <h2
-          id="featured-products"
-          className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white text-center mt-16 mb-2"
-        >
-          Featured{" "}
-          <span className="bg-gradient-to-r from-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
-            Products
-          </span>
-        </h2>
-        <p className="text-white/55 text-sm sm:text-base text-center max-w-lg mb-6 px-4">
-          Hand-selected pieces from the season's most sought-after drops.
-        </p>
+      <div className="bg-brand-900 w-full relative z-10">
+        
+        <Categories />
+        
+        <AiRecommendations />
+        
+        <Trending />
+        
+        <section className="flex flex-col items-center justify-center gap-6 pb-24 pt-16 w-full">
+          <div className="w-full max-w-7xl px-4 sm:px-6 flex flex-col items-center">
+            <h2
+              id="featured-products"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white text-center mb-4"
+            >
+              Featured{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+                Products
+              </span>
+            </h2>
+            <p className="text-brand-light/60 text-base text-center max-w-lg mb-12">
+              Hand-selected pieces from the season's most sought-after drops.
+            </p>
 
-        <div className="productCards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 sm:px-6 max-w-7xl place-items-center">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+            {loading ? (
+              <div className="flex items-center justify-center h-64 w-full">
+                <div className="w-8 h-8 rounded-full border-4 border-white/10 border-t-cyan-500 animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full place-items-center">
+                {products.map((product) => (
+                  <ProductCard key={product.id || product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+        
+        <Statistics />
+        <Marquee />
       </div>
-      <footer className="footer bg-[#05060a] border-t border-white/10 py-12 w-full flex flex-col items-center text-white/80">
-        <div id="contacts" className="contacts-section mb-6 text-center">
-          <h3 className="text-2xl font-semibold mb-3 text-white">Contact Us</h3>
-          <p className="text-sm text-white/60">Email: support@zstore.com</p>
-          <p className="text-sm text-white/60">Phone: +1 234 567 890</p>
-          <p className="text-sm text-white/60">Address: 123 Main St, City, Country</p>
-        </div>
-        <div id="terms" className="terms-section text-center px-4">
-          <h3 className="text-2xl font-semibold mb-3 text-white">Terms &amp; Conditions</h3>
-          <p className="max-w-xl mx-auto text-sm text-white/55 leading-relaxed">
-            By using Z-STORE, you agree to our terms and conditions. All
-            products are subject to availability. Prices and offers may change
-            without prior notice. For more details, contact our support team.
-          </p>
-        </div>
-      </footer>
+      
+      <Footer />
     </>
   );
 };

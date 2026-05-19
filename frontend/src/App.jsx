@@ -3,6 +3,8 @@ import './App.css'
 import Navbar from './components/navbar.jsx'
 import Home from './components/home.jsx'
 import Cart from './components/cart.jsx'  
+import Auth from './components/auth.jsx'
+import ProtectedRoute from './routes/ProtectedRoute.jsx'
 
 function App() {
 
@@ -11,7 +13,8 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/auth" element={<Auth />} />
         {/* Add more routes here for Products, About, Contact pages */}
       </Routes>
     </Router>

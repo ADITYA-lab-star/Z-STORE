@@ -1,13 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Inter", "SF Pro Display", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
+
+  --color-brand-900: #0F172A;
+  --color-brand-800: #111827;
+  --color-brand-700: #1E293B;
+  --color-brand-accent1: #7C3AED;
+  --color-brand-accent2: #06B6D4;
+  --color-brand-light: #F8FAFC;
 
   --animate-gradient-shift: gradient-shift 18s ease infinite;
   --animate-float-slow: float-slow 7s ease-in-out infinite;
   --animate-float-slower: float-slow 9s ease-in-out infinite;
-  --animate-fade-up: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-fade-in: fade-in 1.2s ease-out both;
   --animate-blob: blob 14s ease-in-out infinite;
   --animate-shine: shine 2.4s linear infinite;
 
@@ -19,14 +25,6 @@
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-18px) rotate(2deg); }
   }
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(28px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
   @keyframes blob {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(40px, -30px) scale(1.1); }
@@ -36,4 +34,10 @@
     0% { background-position: -200% center; }
     100% { background-position: 200% center; }
   }
+}
+
+body {
+  background-color: var(--color-brand-900);
+  color: var(--color-brand-light);
+  overflow-x: hidden;
 }

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { ShoppingCart, Check, Heart, Star } from "lucide-react";
 
 const ProductCard = ({ product }) => {
   const [added, setAdded] = useState(false);
 
-  const handleATC = () => {
+  const handleATC = (e) => {
+    e.preventDefault();
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     cart.push({
       _id: product?._id,
@@ -19,97 +22,99 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <article
-      className="group relative w-full max-w-[300px] rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-4 overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:border-white/25 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_30px_60px_-20px_rgba(139,92,246,0.45)]"
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="group relative w-full max-w-[320px] rounded-[2rem] border border-white/10 bg-brand-800/40 backdrop-blur-xl p-5 overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_30px_60px_-20px_rgba(124,58,237,0.3)] hover:border-white/20 transition-all duration-500"
     >
       {/* Aurora hover glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        className="pointer-events-none absolute -inset-px rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700"
         style={{
           background:
-            "radial-gradient(600px circle at 50% 0%, rgba(167,139,250,0.22), transparent 60%)",
+            "radial-gradient(400px circle at 50% 0%, rgba(124,58,237,0.15), transparent 70%)",
         }}
       />
 
-      {/* Image */}
-      <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-white/[0.06] to-black/30 border border-white/5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(139,92,246,0.25),transparent_60%)]" />
-        <img
-          src={product?.image || "imac.png"}
+      {/* Image Container */}
+      <div className="relative rounded-[1.5rem] overflow-hidden aspect-square bg-gradient-to-br from-white/[0.04] to-black/40 border border-white/5 mb-6">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(124,58,237,0.2),transparent_60%)]" />
+        <motion.img
+          src={product?.image || "/vite.svg"}
           alt={product?.name || "Product"}
           loading="lazy"
-          className="relative z-10 h-full w-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:-rotate-1"
+          className="relative z-10 h-full w-full object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-110"
         />
-        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1 rounded-full bg-black/50 backdrop-blur border border-white/15 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-white/90 uppercase">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-wider text-white uppercase">
+          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
           In stock
         </span>
         <button
           aria-label="Add to wishlist"
-          className="absolute top-3 right-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/50 backdrop-blur border border-white/15 text-white/80 hover:text-rose-400 hover:scale-110 transition-all duration-300"
+          className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/70 hover:text-rose-400 hover:scale-110 transition-all duration-300"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
+          <Heart className="h-4 w-4" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="px-1.5 pt-5 pb-1 flex flex-col gap-2.5">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="text-base font-semibold text-white tracking-tight truncate">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+              {product?.category || "Tech"}
+            </span>
+            <div className="flex items-center gap-1 text-xs text-white/70 shrink-0">
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold">4.9</span>
+            </div>
+          </div>
+          <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">
             {product?.name || "Product Name"}
           </h3>
-          <div className="flex items-center gap-1 text-xs text-white/70 shrink-0">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#facc15">
-              <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-            <span className="font-medium">4.9</span>
-          </div>
         </div>
 
-        <p className="text-sm text-white/55 leading-relaxed line-clamp-2 min-h-[2.5rem]">
-          {product?.description || "Premium build with timeless design."}
+        <p className="text-sm text-brand-light/50 leading-relaxed line-clamp-2 min-h-[2.5rem] font-medium">
+          {product?.description || "Premium build with timeless design and unmatched performance."}
         </p>
 
-        <div className="flex items-end justify-between pt-3 mt-1 border-t border-white/10">
+        <div className="flex items-end justify-between pt-4 mt-2 border-t border-white/10">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-white/40">
+            <span className="text-[10px] uppercase tracking-widest text-white/40 font-semibold mb-1">
               Price
             </span>
-            <span className="text-2xl font-semibold text-white tracking-tight">
+            <span className="text-2xl font-bold text-white tracking-tight">
               ${product?.price || "0.00"}
             </span>
           </div>
+          
           <button
             onClick={handleATC}
-            className={`relative inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-semibold transition-all duration-300 active:scale-95 ${
+            className={`relative inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all duration-300 active:scale-95 ${
               added
-                ? "bg-emerald-400 text-black"
-                : "bg-white text-black hover:bg-white hover:shadow-[0_10px_25px_-5px_rgba(255,255,255,0.4)] hover:scale-105"
+                ? "bg-cyan-500 text-brand-900"
+                : "bg-white text-brand-900 hover:bg-brand-light hover:shadow-[0_10px_25px_-5px_rgba(255,255,255,0.3)] hover:scale-105"
             }`}
           >
             {added ? (
               <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
+                <Check className="h-4 w-4" />
                 Added
               </>
             ) : (
               <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14" />
-                  <path d="M12 5v14" />
-                </svg>
+                <ShoppingCart className="h-4 w-4" />
                 Add
               </>
             )}
           </button>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 
