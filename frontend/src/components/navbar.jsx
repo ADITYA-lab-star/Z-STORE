@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Menu, X, Hexagon, User, LogOut } from "lucide-react";
+import { ShoppingCart, Menu, X, Hexagon, User, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
@@ -18,9 +18,26 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      setCartCount(cart.length);
+    };
+
+    updateCartCount();
+    window.addEventListener("cartUpdated", updateCartCount);
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -48,9 +65,12 @@ const Navbar = () => {
     }
   };
 
+  if (location.pathname === "/auth") {
+    return null;
+  }
+
   return (
     <>
-      <div className="h-24" aria-hidden="true" />
       <header className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 sm:px-6 pointer-events-none">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
@@ -148,10 +168,12 @@ const Navbar = () => {
               to="/cart"
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"
             >
-              <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-brand-900">
-                2
-              </span>
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-brand-900">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Mobile Toggle */}

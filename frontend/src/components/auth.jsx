@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, Hexagon, ArrowRight, User } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Hexagon, ArrowRight, User, Check } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";

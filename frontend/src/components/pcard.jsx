@@ -17,6 +17,7 @@ const ProductCard = ({ product }) => {
       quantity: 1,
     });
     localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   };
