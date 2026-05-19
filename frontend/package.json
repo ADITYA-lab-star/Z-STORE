@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:p2p:phase1": "node setup-p2p-phase1.js",
+    "setup:p2p:phase1:part2": "node setup-p2p-phase1-part2.js",
+    "setup:p2p:phase1:part3": "node setup-p2p-phase1-part3.js",
+    "setup:p2p:phase1:part4": "node setup-p2p-phase1-part4.js",
+    "setup:p2p:phase1:barrel": "node setup-p2p-phase1-barrel.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",

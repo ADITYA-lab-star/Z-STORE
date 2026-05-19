@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import ProductCard from "./pcard.jsx";
+import Hero from "./Hero.jsx";
 
 const Home = () => {
   const [products, setproducts] = useState([]);
@@ -14,38 +15,37 @@ const Home = () => {
 
   return (
     <>
-      <div className="home flex flex-col items-center justify-center gap-4 pb-6 w-full">
-        <div className="poster w-full flex justify-center">
-          <img
-            src="./macpos.png"
-            alt=""
-            className="w-full h-auto object-contain rounded-lg"
-          />
-        </div>
-
+      <Hero />
+      <div className="home bg-[#05060a] flex flex-col items-center justify-center gap-4 pb-16 w-full">
         <h2
           id="featured-products"
-          className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-red-500 text-center mt-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white text-center mt-16 mb-2"
         >
-          Featured Products
+          Featured{" "}
+          <span className="bg-gradient-to-r from-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+            Products
+          </span>
         </h2>
+        <p className="text-white/55 text-sm sm:text-base text-center max-w-lg mb-6 px-4">
+          Hand-selected pieces from the season's most sought-after drops.
+        </p>
 
-       <div className="productCards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full px-2 place-items-center">
+        <div className="productCards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 sm:px-6 max-w-7xl place-items-center">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
-      <footer className="footer bg-gray-100 py-8 mt-8 w-full flex flex-col items-center">
-        <div id="contacts" className="contacts-section mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Contact Us</h3>
-          <p>Email: support@zstore.com</p>
-          <p>Phone: +1 234 567 890</p>
-          <p>Address: 123 Main St, City, Country</p>
+      <footer className="footer bg-[#05060a] border-t border-white/10 py-12 w-full flex flex-col items-center text-white/80">
+        <div id="contacts" className="contacts-section mb-6 text-center">
+          <h3 className="text-2xl font-semibold mb-3 text-white">Contact Us</h3>
+          <p className="text-sm text-white/60">Email: support@zstore.com</p>
+          <p className="text-sm text-white/60">Phone: +1 234 567 890</p>
+          <p className="text-sm text-white/60">Address: 123 Main St, City, Country</p>
         </div>
-        <div id="terms" className="terms-section text-center">
-          <h3 className="text-2xl font-bold mb-2">Terms &amp; Conditions</h3>
-          <p className="max-w-xl mx-auto text-gray-700">
+        <div id="terms" className="terms-section text-center px-4">
+          <h3 className="text-2xl font-semibold mb-3 text-white">Terms &amp; Conditions</h3>
+          <p className="max-w-xl mx-auto text-sm text-white/55 leading-relaxed">
             By using Z-STORE, you agree to our terms and conditions. All
             products are subject to availability. Prices and offers may change
             without prior notice. For more details, contact our support team.
