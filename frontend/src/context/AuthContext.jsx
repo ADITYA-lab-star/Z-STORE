@@ -37,9 +37,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       setLoading(false);
+
+      // Sync user to MongoDB backend automatically when authenticated
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          await fetch("http://localhost:5000/api/auth/sync", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (error) {
+          console.error("Error syncing user with backend:", error);
+        }
+      }
     });
 
     return unsubscribe;
