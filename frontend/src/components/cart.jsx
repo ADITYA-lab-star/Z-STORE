@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
 import Cpcard from "./cpcard";
 import Checkout from "./checkout";
 
@@ -59,9 +60,12 @@ const Cart = () => {
                 <p className="text-lg text-brand-light/60 font-medium">
                   Your cart is currently empty.
                 </p>
-                <button className="mt-6 px-6 py-3 rounded-full bg-white text-brand-900 font-bold hover:bg-brand-light hover:scale-105 transition-all">
+                <Link 
+                  to="/" 
+                  className="mt-6 px-6 py-3 rounded-full bg-white text-brand-900 font-bold hover:bg-brand-light hover:scale-105 transition-all inline-flex"
+                >
                   Start Shopping
-                </button>
+                </Link>
               </motion.div>
             ) : (
               cartItems.map((product, idx) => (
@@ -76,7 +80,7 @@ const Cart = () => {
           </div>
           
           <div className="lg:col-span-5 w-full">
-            <Checkout total={total} cartCount={cartItems.length} />
+            <Checkout total={total} cartItems={cartItems} />
           </div>
         </div>
       </div>

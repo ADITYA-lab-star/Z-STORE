@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "../utils/api";
 import ProductCard from "./pcard.jsx";
 import Hero from "./Hero.jsx";
+import FlashSale from "./FlashSale.jsx";
 import Trending from "./trending.jsx";
 import Categories from "./categories.jsx";
-import AiRecommendations from "./ai-recommendations.jsx";
 import Statistics from "./statistics.jsx";
 import Marquee from "./marquee.jsx";
 import Footer from "./footer.jsx";
@@ -13,7 +14,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://z-store.onrender.com/api/products")
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => res.json())
       .then((json) => {
         setProducts(json);
@@ -29,13 +30,12 @@ const Home = () => {
     <>
       <Hero />
       <div className="bg-brand-900 w-full relative z-10">
-        
+        <FlashSale />
+
         <Categories />
-        
-        <AiRecommendations />
-        
+
         <Trending />
-        
+
         <section className="flex flex-col items-center justify-center gap-6 pb-24 pt-16 w-full">
           <div className="w-full max-w-7xl px-4 sm:px-6 flex flex-col items-center">
             <h2
@@ -58,17 +58,20 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full place-items-center">
                 {products.map((product) => (
-                  <ProductCard key={product.id || product._id} product={product} />
+                  <ProductCard
+                    key={product.id || product._id}
+                    product={product}
+                  />
                 ))}
               </div>
             )}
           </div>
         </section>
-        
+
         <Statistics />
         <Marquee />
       </div>
-      
+
       <Footer />
     </>
   );

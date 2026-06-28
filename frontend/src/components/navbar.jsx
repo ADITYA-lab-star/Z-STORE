@@ -8,7 +8,6 @@ import { toast } from "sonner";
 const navLinks = [
   { type: "link", label: "Home", to: "/" },
   { type: "scroll", label: "Categories", target: "categories" },
-  { type: "scroll", label: "AI Picks", target: "ai-picks" },
   { type: "scroll", label: "Trending", target: "trending" },
   { type: "scroll", label: "Featured", target: "featured-products" },
   { type: "scroll", label: "Contact", target: "contacts" },

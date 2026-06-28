@@ -151,7 +151,7 @@ const Hero = () => {
           <div className="absolute inset-0 m-auto h-72 w-72 rounded-full bg-gradient-to-br from-violet-600/40 to-cyan-500/30 blur-[80px]" />
 
           {/* Main card */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] aspect-[4/5] rounded-[2rem] border border-white/15 bg-brand-800/40 backdrop-blur-3xl p-6 flex flex-col justify-between shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] animate-float-slow">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] aspect-[4/5] rounded-[2rem] border border-white/15 bg-brand-800/40 backdrop-blur-3xl p-6 flex flex-col justify-between shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] animate-float-slow cursor-pointer" onClick={scrollToFeatured}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-white/60 tracking-widest uppercase">
                 Featured
@@ -162,12 +162,11 @@ const Hero = () => {
             </div>
             
             <div className="relative flex-1 flex items-center justify-center">
-              <div className="relative h-48 w-48 rounded-[2rem] bg-gradient-to-br from-slate-200 to-slate-500 shadow-2xl flex items-center justify-center p-1">
-                <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                <div className="h-full w-full rounded-[1.8rem] bg-gradient-to-br from-brand-800 to-black flex items-center justify-center shadow-inner">
-                   <img src="/vite.svg" alt="Product" className="h-20 w-20 opacity-80" />
-                </div>
-              </div>
+              <img
+                src="/headphone.png"
+                alt="Aurora Pro Headphones"
+                className="relative z-10 h-56 w-56 object-contain drop-shadow-[0_20px_40px_rgba(139,92,246,0.4)] transition-transform duration-700 hover:scale-110"
+              />
             </div>
 
             <div>
