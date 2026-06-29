@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Hexagon, User, LogOut } from "lucide-react";
+import { ShoppingCart, Menu, X, Hexagon, User, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
@@ -21,6 +21,17 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setIsAdmin(false);
+      return;
+    }
+    currentUser.getIdTokenResult().then((result) => {
+      setIsAdmin(result.claims.role === "admin");
+    }).catch(() => setIsAdmin(false));
+  }, [currentUser]);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -147,6 +158,11 @@ const Navbar = () => {
                       <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors">
                         <User className="h-4 w-4" /> Profile
                       </Link>
+                      {isAdmin && (
+                        <Link to="/admin" className="flex items-center gap-2 px-4 py-2 text-sm text-violet-400 hover:text-violet-300 hover:bg-white/10 transition-colors">
+                          <ShieldCheck className="h-4 w-4" /> Admin Panel
+                        </Link>
+                      )}
                       <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
                         <LogOut className="h-4 w-4" /> Log out
                       </button>
@@ -174,7 +190,7 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-
+ 
             {/* Mobile Toggle */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -185,7 +201,7 @@ const Navbar = () => {
           </div>
         </motion.nav>
       </header>
-
+ 
       {/* Mobile Menu Panel */}
       <AnimatePresence>
         {menuOpen && (
@@ -227,6 +243,56 @@ const Navbar = () => {
                     )}
                   </motion.li>
                 ))}
+                {currentUser && (
+                  <>
+                    <div className="h-px bg-white/10 my-2" />
+                    <li>
+                      <Link
+                        to="/profile"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 rounded-2xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-lg font-medium"
+                      >
+                        <User className="h-5 w-5" /> Profile
+                      </Link>
+                    </li>
+                    {isAdmin && (
+                      <li>
+                        <Link
+                          to="/admin"
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-2 px-4 py-3 rounded-2xl text-violet-400 hover:text-violet-300 hover:bg-white/10 transition-colors duration-200 text-lg font-medium"
+                        >
+                          <ShieldCheck className="h-5 w-5" /> Admin Panel
+                        </Link>
+                      </li>
+                    )}
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors duration-200 text-lg font-medium text-left"
+                      >
+                        <LogOut className="h-5 w-5" /> Log out
+                      </button>
+                    </li>
+                  </>
+                )}
+                {!currentUser && (
+                  <>
+                    <div className="h-px bg-white/10 my-2" />
+                    <li>
+                      <Link
+                        to="/auth"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 rounded-2xl text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 text-lg font-medium"
+                      >
+                        Sign In
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </motion.div>
