@@ -1,7 +1,15 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Product = require('../models/Product');
 const { requireAuth } = require('../middleware/authMiddleware');
+
+// Lazily initialize Stripe to prevent boot-time crashes if STRIPE_SECRET_KEY is not set
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not set in the environment variables.');
+  }
+  return require('stripe')(key);
+};
 
 const router = express.Router();
 
@@ -60,6 +68,7 @@ router.post('/', requireAuth, async (req, res) => {
     ];
 
     // 3. Generate the secure Stripe Checkout Session URL
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items,
