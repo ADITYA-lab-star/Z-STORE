@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '../../utils/api';
 
 const AccountDetails = () => {
   const { currentUser } = useAuth();
@@ -19,7 +20,7 @@ const AccountDetails = () => {
       
       // Sync with our backend
       const token = await currentUser.getIdToken();
-      await fetch("http://localhost:5000/api/auth/sync", {
+      await fetch(`${API_BASE_URL}/api/auth/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

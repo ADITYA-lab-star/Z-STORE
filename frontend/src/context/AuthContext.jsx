@@ -9,6 +9,7 @@ import {
   getIdTokenResult,
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
+import { API_BASE_URL } from "../utils/api";
 
 const AuthContext = createContext();
 
@@ -65,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
           // Sync user to MongoDB backend automatically when authenticated
           const token = tokenResult.token;
-          await fetch("http://localhost:5000/api/auth/sync", {
+          await fetch(`${API_BASE_URL}/api/auth/sync`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

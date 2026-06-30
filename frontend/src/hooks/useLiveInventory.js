@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 // Initialize the socket outside the hook to maintain a single global connection
-const socket = io('http://localhost:5000', {
+const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const socket = io(SOCKET_URL, {
   autoConnect: false, // We'll connect manually when the hook is mounted
 });
 

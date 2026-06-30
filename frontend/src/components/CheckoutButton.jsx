@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../utils/api';
 
 const CheckoutButton = ({ cartItems }) => {
   const { currentUser } = useAuth();
@@ -21,7 +22,7 @@ const CheckoutButton = ({ cartItems }) => {
       const token = await currentUser.getIdToken();
 
       // 2. Transmit the raw cart data to our highly secure backend
-      const response = await fetch('http://localhost:5000/api/checkout', {
+      const response = await fetch(`${API_BASE_URL}/api/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

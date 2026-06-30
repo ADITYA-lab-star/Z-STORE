@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Headphones, Watch, Laptop, Mouse, Smartphone, Camera, X } from "lucide-react";
 import ProductCard from "./pcard";
+import { API_BASE_URL } from "../utils/api";
 
 const categories = [
   { id: 1, name: "Audio", icon: <Headphones className="h-8 w-8" />, desc: "Headphones & Earbuds", color: "from-violet-500/20 to-fuchsia-500/20", border: "group-hover:border-violet-500/50" },
@@ -37,7 +38,7 @@ const Categories = () => {
     const fetchCategoryProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         const allProducts = await response.json();
         
         // Filter dynamically on the client for rapid UI response

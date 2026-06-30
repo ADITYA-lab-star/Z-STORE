@@ -83,8 +83,9 @@ const OrderHistory = () => {
 
   // ─── Real-time socket listener ───────────────────────────────────────
   useEffect(() => {
+    const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
     const { io } = require("socket.io-client");
-    const socket = io("http://localhost:5000", { autoConnect: true });
+    const socket = io(SOCKET_URL, { autoConnect: true });
 
     socket.on("order_status_updated", ({ orderId, newStatus }) => {
       setRawOrders((prev) =>

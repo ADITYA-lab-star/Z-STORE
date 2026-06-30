@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { CreditCard, Lock, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import { API_BASE_URL } from "../utils/api";
 
 const Checkout = ({ total, cartItems }) => {
   const { currentUser } = useAuth();
@@ -37,7 +38,7 @@ const Checkout = ({ total, cartItems }) => {
 
     try {
       const token = await currentUser.getIdToken();
-      const response = await fetch('http://localhost:5000/api/checkout', {
+      const response = await fetch(`${API_BASE_URL}/api/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
