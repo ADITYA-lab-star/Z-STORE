@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+
+// Lazy initialize Stripe to prevent boot crashes if key is missing locally
+const stripe = process.env.STRIPE_SECRET_KEY ? require("stripe")(process.env.STRIPE_SECRET_KEY) : null;
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +28,11 @@ app.use(cors({ origin: "*" }));
 
 // 3. Real Stripe Webhook (must come before express.json)
 app.post("/api/webhooks/stripe-success", express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripe) {
+    console.warn("Stripe is not configured on this server");
+    return res.status(500).json({ error: "Stripe is not configured" });
+  }
+
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
