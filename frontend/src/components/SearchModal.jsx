@@ -123,7 +123,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                         className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors group"
                       >
                         <div className="w-14 h-14 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex-shrink-0">
-                          <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                          <img src={product.image || "/imac.png"} alt={product.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-white font-medium truncate group-hover:text-cyan-400 transition-colors">

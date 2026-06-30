@@ -40,7 +40,7 @@ const Admin = () => {
   if (!currentUser || !isAdmin) return <Navigate to="/" replace />;
 
   return (
-    <div className="min-h-screen bg-brand-900 text-white pt-20">
+    <div className="min-h-screen bg-brand-900 text-white pt-32">
       {/* Header */}
       <div className="border-b border-white/10 bg-brand-900/80 backdrop-blur-xl sticky top-24 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
