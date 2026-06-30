@@ -44,18 +44,20 @@ const Trending = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white uppercase">
-              Trending Now
+        <div className="flex flex-col items-center text-center gap-6">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">
+              Trending{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+                Now
+              </span>
             </h2>
-            <p className="text-brand-light/60 max-w-md font-medium">
-              Discover what's hot right now, ranked organically by live user
-              views.
+            <p className="text-brand-light/60 text-base max-w-lg mx-auto">
+              Discover what's hot right now, ranked organically by live user views.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 justify-center">
             {filters.map((f) => {
               const displayLabel = f.toUpperCase();
               return (
