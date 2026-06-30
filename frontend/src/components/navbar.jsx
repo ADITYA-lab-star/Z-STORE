@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Hexagon, User, LogOut, ShieldCheck } from "lucide-react";
+import { ShoppingCart, Menu, X, Hexagon, User, LogOut, ShieldCheck, Search } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import SearchModal from "./SearchModal";
 
 const navLinks = [
   { type: "link", label: "Home", to: "/" },
@@ -22,6 +23,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (!currentUser) {
@@ -81,6 +83,7 @@ const Navbar = () => {
 
   return (
     <>
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
       <header className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 sm:px-6 pointer-events-none">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
@@ -179,6 +182,13 @@ const Navbar = () => {
               </Link>
             )}
             
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
             <Link
               to="/cart"
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white/20 transition-all duration-300"

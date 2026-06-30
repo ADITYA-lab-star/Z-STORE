@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { API_BASE_URL } from "../../utils/api";
 import { toast } from "sonner";
+import { io } from "socket.io-client";
 
 const STATUS_STEPS = ["pending", "processing", "shipped", "delivered"];
 
@@ -84,7 +85,6 @@ const OrderHistory = () => {
   // ─── Real-time socket listener ───────────────────────────────────────
   useEffect(() => {
     const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-    const { io } = require("socket.io-client");
     const socket = io(SOCKET_URL, { autoConnect: true });
 
     socket.on("order_status_updated", ({ orderId, newStatus }) => {
