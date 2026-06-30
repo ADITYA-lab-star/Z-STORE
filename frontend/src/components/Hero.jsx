@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Play, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Star, Zap, Sparkles } from "lucide-react";
 
 const Hero = () => {
   const ref = useRef(null);
@@ -14,6 +14,11 @@ const Hero = () => {
 
   const scrollToFeatured = () => {
     const el = document.getElementById("featured-products");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToFlashSale = () => {
+    const el = document.getElementById("flash-sale");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -114,9 +119,12 @@ const Hero = () => {
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
 
-            <button className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md px-8 py-4 text-sm font-medium text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 active:scale-95">
-              <Play className="h-4 w-4 fill-current" />
-              Watch the film
+            <button 
+              onClick={scrollToFlashSale}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md px-8 py-4 text-sm font-medium text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 active:scale-95"
+            >
+              <Zap className="h-4 w-4 fill-current text-[#00F0FF]" />
+              Active Deals
             </button>
           </motion.div>
 

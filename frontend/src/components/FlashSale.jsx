@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Timer, Zap, ShoppingCart } from 'lucide-react';
+import { Timer, Zap, ShoppingCart, Check } from 'lucide-react';
 import { API_BASE_URL } from '../utils/api';
 
 const CountdownTimer = ({ endTimeString, onExpire }) => {
@@ -112,7 +112,7 @@ const FlashSale = () => {
   const claimedPercent = Math.min(100, Math.max(0, ((initialAssumedStock - currentStock) / initialAssumedStock) * 100));
 
   return (
-    <section className="w-full bg-[#0B0E14] px-4 sm:px-6 py-12 sm:py-20 relative overflow-hidden z-10 border-b border-white/5">
+    <section id="flash-sale" className="w-full bg-[#0B0E14] px-4 sm:px-6 py-12 sm:py-20 relative overflow-hidden z-10 border-b border-white/5">
        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#00F0FF]/30 to-transparent" />
        
        <div className="max-w-7xl mx-auto">
