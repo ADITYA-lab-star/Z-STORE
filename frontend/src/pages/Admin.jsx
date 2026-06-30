@@ -6,11 +6,13 @@ import AdminStats from "../components/admin/AdminStats";
 import ProductManager from "../components/admin/ProductManager";
 import OrderManager from "../components/admin/OrderManager";
 import UserManager from "../components/admin/UserManager";
-import { LayoutDashboard, Package, ShoppingBag, Users, ShieldCheck } from "lucide-react";
+import FlashSaleManager from "../components/admin/FlashSaleManager";
+import { LayoutDashboard, Package, ShoppingBag, Users, ShieldCheck, Zap } from "lucide-react";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "products",  label: "Products",  icon: Package },
+  { id: "flash",     label: "Flash Sales", icon: Zap },
   { id: "orders",    label: "Orders",    icon: ShoppingBag },
   { id: "users",     label: "Users",     icon: Users },
 ];
@@ -94,6 +96,7 @@ const Admin = () => {
               </div>
             )}
             {activeTab === "products" && <ProductManager />}
+            {activeTab === "flash"    && <FlashSaleManager />}
             {activeTab === "orders"   && <OrderManager />}
             {activeTab === "users"    && <UserManager />}
           </motion.div>

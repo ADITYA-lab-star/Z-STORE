@@ -3,6 +3,7 @@ const admin = require("../config/firebase-admin");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const FlashSale = require("../models/FlashSale");
 const { verifyRole } = require("../middleware/authMiddleware");
 const mongoose = require("mongoose");
 
@@ -159,6 +160,56 @@ router.post("/users/:uid/role", async (req, res) => {
     res.json({ message: `Role '${role}' successfully assigned to user ${req.params.uid}` });
   } catch (err) {
     res.status(500).json({ error: "Failed to update user role", details: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────
+// FLASH SALE MANAGEMENT
+// ─────────────────────────────────────────────
+router.get("/flash-sales", async (req, res) => {
+  try {
+    const sales = await FlashSale.find().populate("productId", "name price stock image").sort({ createdAt: -1 });
+    res.json(sales);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch flash sales" });
+  }
+});
+
+router.post("/flash-sales", async (req, res) => {
+  try {
+    // If setting active, deactivate others
+    if (req.body.isActive) {
+      await FlashSale.updateMany({}, { isActive: false });
+    }
+    const sale = new FlashSale(req.body);
+    const saved = await sale.save();
+    const populated = await FlashSale.findById(saved._id).populate("productId", "name price stock image");
+    res.status(201).json(populated);
+  } catch (err) {
+    res.status(400).json({ error: "Failed to create flash sale", details: err.message });
+  }
+});
+
+router.put("/flash-sales/:id", async (req, res) => {
+  try {
+    if (req.body.isActive) {
+      await FlashSale.updateMany({ _id: { $ne: req.params.id } }, { isActive: false });
+    }
+    const updated = await FlashSale.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate("productId", "name price stock image");
+    if (!updated) return res.status(404).json({ error: "Flash sale not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: "Failed to update flash sale", details: err.message });
+  }
+});
+
+router.delete("/flash-sales/:id", async (req, res) => {
+  try {
+    const deleted = await FlashSale.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Flash sale not found" });
+    res.json({ message: "Flash sale deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete flash sale" });
   }
 });
 

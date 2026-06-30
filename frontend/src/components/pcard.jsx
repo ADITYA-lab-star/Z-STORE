@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Check, Heart, Star, X } from "lucide-react";
+import { ShoppingCart, Check, Heart, Star, X, Layers } from "lucide-react";
 import { API_BASE_URL } from "../utils/api";
+import { useCompare } from "../context/CompareContext";
+import LiveStockCounter from "./LiveStockCounter";
 
 const ProductCard = ({ product }) => {
   const [added, setAdded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productDetails, setProductDetails] = useState(product);
   const productId = product?._id || product?.id;
+  const { toggleCompare, compareItems } = useCompare();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    setIsWishlisted(wishlist.includes(productId));
+  }, [productId]);
 
   useEffect(() => {
     setProductDetails(product);
@@ -28,6 +37,19 @@ const ProductCard = ({ product }) => {
     } catch (error) {
       console.error("Product view update failed:", error);
     }
+  };
+
+  const handleWishlist = (e) => {
+    e.stopPropagation();
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    if (wishlist.includes(productId)) {
+      wishlist = wishlist.filter(id => id !== productId);
+      setIsWishlisted(false);
+    } else {
+      wishlist.push(productId);
+      setIsWishlisted(true);
+    }
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
   };
 
   const handleATC = (e) => {
@@ -87,17 +109,30 @@ const ProductCard = ({ product }) => {
             {/* Right: Details */}
             <div className="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-between bg-[#0B0E14]/80 overflow-y-auto">
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#00F0FF] bg-[#00F0FF]/10 px-3 py-1 rounded-full border border-[#00F0FF]/20">
-                    {productDetails?.category || "Tech"}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-white/70">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-semibold">4.9 / 5.0</span>
-                  </span>
-                  <span className="text-xs text-white/50">
-                    {productDetails?.views ?? 0} views
-                  </span>
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#00F0FF] bg-[#00F0FF]/10 px-3 py-1 rounded-full border border-[#00F0FF]/20">
+                      {productDetails?.category || "Tech"}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-white/70">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">{productDetails?.rating || 4.9} / 5.0</span>
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCompare(productDetails);
+                    }}
+                    className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full transition-all border ${
+                      compareItems.find((p) => (p._id || p.id) === productId)
+                        ? "bg-[#00F0FF]/20 text-[#00F0FF] border-[#00F0FF]/50"
+                        : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    {compareItems.find((p) => (p._id || p.id) === productId) ? "Comparing" : "Compare"}
+                  </button>
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight mb-4 leading-tight">
                   {productDetails?.name || product?.name || "Product Name"}
@@ -107,6 +142,13 @@ const ProductCard = ({ product }) => {
                     product?.description ||
                     "Premium build with timeless design and unmatched performance. Experience the next generation of technology with seamless integration."}
                 </p>
+
+                {/* Real-time stock counter inside modal */}
+                {productDetails && (
+                  <div className="mb-6">
+                    <LiveStockCounter productId={productId} initialStock={productDetails.stock} />
+                  </div>
+                )}
 
                 {/* Mock Variants */}
                 <div className="mb-8">
@@ -189,16 +231,30 @@ const ProductCard = ({ product }) => {
             className="relative z-10 h-full w-full object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-110"
             onError={(e) => { e.target.src = "/imac.png"; }}
           />
-          <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-wider text-white uppercase">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_8px_rgba(0,240,255,0.8)]" />
-            In stock
-          </span>
+          {product?.stock === 0 ? (
+            <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-wider text-white uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+              Sold Out
+            </span>
+          ) : product?.stock <= 10 ? (
+            <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-wider text-white uppercase animate-pulse">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+              Low Stock
+            </span>
+          ) : (
+            <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-wider text-white uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] shadow-[0_0_8px_rgba(0,240,255,0.8)]" />
+              In stock
+            </span>
+          )}
           <button
             aria-label="Add to wishlist"
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/70 hover:text-rose-400 hover:scale-110 transition-all duration-300"
+            onClick={handleWishlist}
+            className={`absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:scale-110 transition-all duration-300 ${
+              isWishlisted ? "text-rose-500" : "text-white/70 hover:text-rose-400"
+            }`}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-4 w-4" fill={isWishlisted ? "currentColor" : "none"} />
           </button>
         </div>
 

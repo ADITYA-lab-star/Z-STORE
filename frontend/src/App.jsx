@@ -8,6 +8,7 @@ import Profile from './pages/Profile.jsx'
 import Admin from './pages/Admin.jsx'
 import ProtectedRoute from './routes/ProtectedRoute.jsx'
 import AdminRoute from './routes/AdminRoute.jsx'
+import CompareFloatingButton from './components/CompareFloatingButton.jsx'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
       </Routes>
+      <CompareFloatingButton />
     </Router>
   );
 }

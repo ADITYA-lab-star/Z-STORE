@@ -35,6 +35,12 @@ jobs:
           echo "Running backend build (if present)..."
           npm run build --if-present
 
+      - name: Test Backend Docker Build
+        run: docker build -t z-store-backend ./backend
+
+      - name: Test Frontend Docker Build
+        run: docker build -t z-store-frontend ./frontend
+
       - name: Trigger Render Deploy Hook (Backend)
         env:
           # Ensure you add RENDER_DEPLOY_HOOK_URL in your GitHub repository secrets

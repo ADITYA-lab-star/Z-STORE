@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
@@ -21,6 +23,81 @@ const io = new Server(server, {
 app.set("io", io);
 
 app.use(cors({ origin: "*" }));
+
+// 3. Real Stripe Webhook (must come before express.json)
+app.post("/api/webhooks/stripe-success", express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error("Webhook signature verification failed.", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the checkout.session.completed event
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    
+    // In our checkout flow, we pass metadata.firebaseUid and metadata.items (JSON stringified)
+    const firebaseUid = session.metadata?.firebaseUid || "anonymous";
+    const itemsRaw = session.metadata?.items;
+    
+    if (itemsRaw) {
+      try {
+        const items = JSON.parse(itemsRaw);
+        const orderItems = [];
+        let calculatedTotal = 0;
+
+        for (const item of items) {
+          if (!item.productId || !item.quantityBought) continue;
+
+          // Decrement the stock securely in MongoDB
+          const updatedProduct = await Product.findByIdAndUpdate(
+            item.productId,
+            { $inc: { stock: -Math.abs(item.quantityBought) } },
+            { new: true }
+          );
+
+          if (updatedProduct) {
+            orderItems.push({
+              productId: updatedProduct._id,
+              name: updatedProduct.name,
+              price: updatedProduct.price,
+              quantity: item.quantityBought
+            });
+            calculatedTotal += (updatedProduct.price * item.quantityBought);
+
+            // Broadcast the real-time stock update
+            io.emit("inventory_updated", {
+              productId: updatedProduct._id,
+              newStock: updatedProduct.stock
+            });
+          }
+        }
+
+        if (orderItems.length > 0 && firebaseUid !== "anonymous") {
+          const newOrder = new Order({
+            firebaseUid,
+            items: orderItems,
+            totalAmount: session.amount_total / 100, // Stripe amount is in cents
+            stripeSessionId: session.id,
+            status: "pending"
+          });
+          await newOrder.save();
+        }
+      } catch (err) {
+        console.error("Error processing webhook metadata:", err);
+      }
+    }
+  }
+
+  res.json({ received: true });
+});
+
+// Parse JSON bodies for all other routes
 app.use(express.json());
 // Serve product images statically
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
@@ -30,8 +107,12 @@ const checkoutRoutes = require("./routes/checkoutRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
-app.use("/api/auth", authRoutes);
-app.use("/api/checkout", checkoutRoutes);
+// Rate limiters
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+const checkoutLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 50 });
+
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/checkout", checkoutLimiter, checkoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 
@@ -53,71 +134,24 @@ io.on("connection", (socket) => {
   });
 });
 
-// 3. Simulated Stripe Webhook that processes an order and emits the event
-app.post("/api/webhooks/stripe-success", async (req, res) => {
-  try {
-    // Accept robust payload or fallback to old simulator payload
-    const items = req.body.items || [{ productId: req.body.productId, quantityBought: req.body.quantityBought }];
-    const firebaseUid = req.body.firebaseUid || "anonymous";
-    const totalAmount = req.body.totalAmount || 0;
-    const sessionId = req.body.sessionId || "simulated_session";
-
-    if (!items || items.length === 0) {
-      return res.status(400).json({ error: "Missing items" });
-    }
-
-    const orderItems = [];
-    let calculatedTotal = 0;
-
-    for (const item of items) {
-      if (!item.productId || !item.quantityBought) continue;
-
-      // Decrement the stock securely in MongoDB
-      const updatedProduct = await Product.findByIdAndUpdate(
-        item.productId,
-        { $inc: { stock: -Math.abs(item.quantityBought) } },
-        { new: true }
-      );
-
-      if (updatedProduct) {
-        orderItems.push({
-          productId: updatedProduct._id,
-          name: updatedProduct.name,
-          price: updatedProduct.price,
-          quantity: item.quantityBought
-        });
-        
-        calculatedTotal += (updatedProduct.price * item.quantityBought);
-
-        // Broadcast the real-time stock update to ALL connected WebSockets
-        io.emit("inventory_updated", {
-          productId: updatedProduct._id,
-          newStock: updatedProduct.stock
-        });
-      }
-    }
-
-    // Save the new Order document tracking the user's history
-    if (orderItems.length > 0 && firebaseUid !== "anonymous") {
-      const newOrder = new Order({
-        firebaseUid,
-        items: orderItems,
-        totalAmount: totalAmount > 0 ? totalAmount : calculatedTotal,
-        stripeSessionId: sessionId
-      });
-      await newOrder.save();
-    }
-
-    return res.json({ success: true, processedItems: orderItems.length });
-  } catch (error) {
-    console.error("Webhook Error:", error);
-    res.status(500).json({ error: "Webhook handler failed" });
-  }
-});
 
 // Standard Routes
 app.get("/", (req, res) => {
   res.send("Running with Nodemon + Express + MongoDB + Socket.IO!");
+});
+
+// Flash Sale Route
+const FlashSale = require("./models/FlashSale");
+app.get("/api/flash-sale/active", async (req, res) => {
+  try {
+    const activeSale = await FlashSale.findOne({ isActive: true }).populate("productId");
+    if (!activeSale || !activeSale.productId) {
+      return res.status(404).json({ error: "No active flash sale" });
+    }
+    res.json(activeSale);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch active flash sale" });
+  }
 });
 
 app.get("/api/products/trending", async (req, res) => {
@@ -157,43 +191,6 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
-app.post("/api/addprod", async (req, res) => {
-  try {
-    const newProduct = new Product(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to add product" });
-  }
-});
-
-app.delete("/api/products/:id", async (req, res) => {
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    res.json({ message: "Product deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete product" });
-  }
-});
-
-app.put("/api/products/:id", async (req, res) => {
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    res.json(updatedProduct);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update product" });
-  }
-});
 
 const PORT = process.env.PORT || 5000;
 // 5. Mount the app on the HTTP server to support Socket.IO
